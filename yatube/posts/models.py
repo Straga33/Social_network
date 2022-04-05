@@ -12,7 +12,11 @@ class Post(models.Model):
         verbose_name='Текст поста',
         help_text='Текст нового поста',
     )
-    pub_date = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время публикации',
+        help_text='Время публикации поста'
+    )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -70,6 +74,8 @@ class Comment(models.Model):
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
+        verbose_name='Комментируемый текст',
+        help_text='Текст поста для комментариев',
     )
     author = models.ForeignKey(
         User,
@@ -82,13 +88,17 @@ class Comment(models.Model):
         verbose_name='Текст комментария',
         help_text='Добавить комментарий:',
     )
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время публикации',
+        help_text='Время публикации комментария',
+    )
 
     class Meta:
         ordering = ('created',)
 
     def __str__(self):
-        return self.text
+        return self.text[:15]
 
 
 class Follow(models.Model):
@@ -96,9 +106,13 @@ class Follow(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='follower',
+        verbose_name='Подписавшийся пользователь',
+        help_text='Пользователь подписки',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
+        verbose_name='Подписка на автора',
+        help_text='Автор подписки',
     )
