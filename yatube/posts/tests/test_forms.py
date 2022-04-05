@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
 
-from posts.models import Group, Post, Comment
+from posts.models import Group, Post
 
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -37,13 +37,13 @@ class PostFormTests(TestCase):
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
-        small_gif = (            
-             b'\x47\x49\x46\x38\x39\x61\x02\x00'
-             b'\x01\x00\x80\x00\x00\x00\x00\x00'
-             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-             b'\x0A\x00\x3B'
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
         self.uploaded = SimpleUploadedFile(
             name='small.gif',
@@ -53,7 +53,7 @@ class PostFormTests(TestCase):
 
     def test_create_post(self):
         """Валидная форма создает запись post."""
-        posts_count = Post.objects.count()        
+        posts_count = Post.objects.count()
         form_data = {
             'text': 'Тестовый текст формы',
             'group': self.group.id,
@@ -117,10 +117,12 @@ class PostFormTests(TestCase):
         )
         response = self.authorized_client.get(reverse('posts:index')).content
         Post.objects.last().delete()
-        response_after = self.authorized_client.get(reverse('posts:index')).content
+        response_after = self.authorized_client.get(
+                            reverse('posts:index')).content
         self.assertEqual(response, response_after)
         cache.clear()
-        response_after = self.authorized_client.get(reverse('posts:index')).content
+        response_after = self.authorized_client.get(
+                            reverse('posts:index')).content
         self.assertNotEqual(response, response_after)
 
 
@@ -139,7 +141,7 @@ class CommentFormTests(TestCase):
             text='Тестовый пост',
             group=cls.group,
         )
-    
+
     def setUp(self):
         self.user_not_authorized = User.objects.create(username='HasNoName')
         self.user_authorized = User.objects.create(username='Sold')
@@ -148,7 +150,7 @@ class CommentFormTests(TestCase):
         self.authorized_client.force_login(self.user_authorized)
 
     def test_comment_add_authorized_user(self):
-        "Провека, комментировать может только авторизованный пользователь"        
+        "Провека, комментировать может только авторизованный пользователь"
         form_data_auth = {
             'post': self.post,
             'author': self.user_authorized,
@@ -172,7 +174,7 @@ class CommentFormTests(TestCase):
             reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
             data=form_data_not_auth,
             follow=True
-        )         
+        )
         self.assertRedirects(
             response,
             f"{reverse('users:login')}?next=/posts/1/comment/"

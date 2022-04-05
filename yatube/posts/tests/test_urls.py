@@ -85,6 +85,7 @@ class PostURLTests(TestCase):
                 response = self.authorized_client_auth.get(address)
                 self.assertTemplateUsed(response, template)
 
+
 class Page404Tests(TestCase):
     def setUp(self):
         self.guest_client = Client()

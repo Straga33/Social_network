@@ -33,13 +33,13 @@ class PostViewsTest(TestCase):
             slug='test-slug_2',
             description='Тестовое описание_2',
         )
-        small_gif = (            
-             b'\x47\x49\x46\x38\x39\x61\x02\x00'
-             b'\x01\x00\x80\x00\x00\x00\x00\x00'
-             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-             b'\x0A\x00\x3B'
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
         uploaded = SimpleUploadedFile(
             name='small.gif',
@@ -57,7 +57,7 @@ class PostViewsTest(TestCase):
             post=cls.post,
             author=cls.user,
         )
-    
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -153,7 +153,6 @@ class PostViewsTest(TestCase):
         )
         posts_context = response.context['post']
         self.validating_post_fields(posts_context)
-        
 
     def test_post_detail_show_correct_comment(self):
         "В шаблоне post_detail сформирован с комментариями"
@@ -231,11 +230,6 @@ class PaginatorViewsTest(TestCase):
 
 
 class FollowTest(TestCase):
-    # @classmethod
-    # def setUpClass(cls):
-    #     super().setUpClass()
-    #     cls.user = User.objects.create(username='auth')
-
     def setUp(self):
         self.author = User.objects.create(username='auth')
         self.user = User.objects.create(username='HasNoName')
@@ -246,10 +240,10 @@ class FollowTest(TestCase):
         self.authorized_client_not_follow.force_login(self.user_not_follow)
 
     def test_follow_unfollow_author(self):
-        """Проверяем пользователь подписался|отписался"""        
+        """Проверяем пользователь подписался|отписался"""
         templates_names = {
             self.assertTrue: 'posts:profile_follow',
-            self.assertFalse: 'posts:profile_unfollow',  
+            self.assertFalse: 'posts:profile_unfollow',
         }
         for testing_tool, url_follow in templates_names.items():
             with self.subTest(testing_tool=testing_tool):
@@ -263,9 +257,9 @@ class FollowTest(TestCase):
                         author=self.author
                     ).exists()
                 )
-                
+
     def test_new_post_see_only_follow(self):
-        follow = Follow.objects.create(
+        Follow.objects.create(
             user=self.user,
             author=self.author,
         )
@@ -274,16 +268,11 @@ class FollowTest(TestCase):
             author=self.author
         )
         response_auth = self.authorized_client.get(
-                    reverse('posts:follow_index')
-                ).context['page_obj']
+                            reverse('posts:follow_index')
+                        ).context['page_obj']
         self.assertIn(post, response_auth)
 
         response_not_auth = self.authorized_client_not_follow.get(
-                    reverse('posts:follow_index')
-                ).context['page_obj']
+                                reverse('posts:follow_index')
+                            ).context['page_obj']
         self.assertNotIn(post, response_not_auth)
-
-
-
-
-
