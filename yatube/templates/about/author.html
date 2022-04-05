@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+<div class="row">
+  <h1>Привет, я автор</h1>  
+  <aside class="col-12 col-md-4">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        Соц. сети: <a href="https://vk.com/bami333">ВКонтакте</a>
+      </li>
+      <li class="list-group-item">
+        Веб-сервис совместной разработки: <a href="https://github.com/Straga33">Github</a>
+      </li>
+    </ul>
+  </aside>
+  <article class="col-12 col-md-7">
+    <p>Здесь должно быть много описания о себе, но лучше картинка</p>
+    <p><img src="{% static 'img/com_1.png' %}" class="img-fluid" width="70%" alt="просто история"></p>
+  </article>
+</div>
+{% endblock %}
