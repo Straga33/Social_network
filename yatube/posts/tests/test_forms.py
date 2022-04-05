@@ -118,11 +118,11 @@ class PostFormTests(TestCase):
         response = self.authorized_client.get(reverse('posts:index')).content
         Post.objects.last().delete()
         response_after = self.authorized_client.get(
-                            reverse('posts:index')).content
+            reverse('posts:index')).content
         self.assertEqual(response, response_after)
         cache.clear()
         response_after = self.authorized_client.get(
-                            reverse('posts:index')).content
+            reverse('posts:index')).content
         self.assertNotEqual(response, response_after)
 
 

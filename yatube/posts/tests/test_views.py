@@ -268,11 +268,11 @@ class FollowTest(TestCase):
             author=self.author
         )
         response_auth = self.authorized_client.get(
-                            reverse('posts:follow_index')
-                        ).context['page_obj']
+            reverse('posts:follow_index')
+        ).context['page_obj']
         self.assertIn(post, response_auth)
 
         response_not_auth = self.authorized_client_not_follow.get(
-                                reverse('posts:follow_index')
-                            ).context['page_obj']
+            reverse('posts:follow_index')
+        ).context['page_obj']
         self.assertNotIn(post, response_not_auth)
