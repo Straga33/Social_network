@@ -42,10 +42,10 @@ def profile(request, username):
     paginator = Paginator(posts_author, settings.NUB_OF_POSTS)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    following = (request.user.is_authenticated
-        and author.following.filter(
-            user=request.user
-        ).exists()
+    following = (request.user.is_authenticated 
+                    and author.following.filter(
+                        user=request.user
+                    ).exists()
     )
     context = {
         'author': author,
