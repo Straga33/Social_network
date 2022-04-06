@@ -150,7 +150,7 @@ class CommentFormTests(TestCase):
         self.authorized_client.force_login(self.user_authorized)
 
     def test_comment_add_authorized_user(self):
-        "Провека, комментировать может только авторизованный пользователь"
+        """Провека, комментировать может только авторизованный пользователь"""
         form_data_auth = {
             'post': self.post,
             'author': self.user_authorized,
@@ -175,7 +175,8 @@ class CommentFormTests(TestCase):
             data=form_data_not_auth,
             follow=True
         )
+        rev_login = reverse('users:login')
         self.assertRedirects(
             response,
-            f"{reverse('users:login')}?next=/posts/1/comment/"
+            f'{rev_login}?next=/posts/1/comment/'
         )

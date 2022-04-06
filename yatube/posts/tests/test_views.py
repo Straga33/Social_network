@@ -239,26 +239,38 @@ class FollowTest(TestCase):
         self.authorized_client_not_follow = Client()
         self.authorized_client_not_follow.force_login(self.user_not_follow)
 
-    def test_follow_unfollow_author(self):
-        """Проверяем пользователь подписался|отписался"""
-        templates_names = {
-            self.assertTrue: 'posts:profile_follow',
-            self.assertFalse: 'posts:profile_unfollow',
-        }
-        for testing_tool, url_follow in templates_names.items():
-            with self.subTest(testing_tool=testing_tool):
-                response = self.authorized_client.get(
-                    reverse(url_follow, kwargs={'username': self.author})
-                )
-                self.assertRedirects(response, f'/profile/{self.author}/')
-                testing_tool(
-                    Follow.objects.filter(
-                        user=self.user,
-                        author=self.author
-                    ).exists()
-                )
+    def test__user_follow_author(self):
+        """Проверяем пользователь подписался на автора"""
+        response = self.authorized_client.get(
+            reverse('posts:profile_follow',
+                kwargs={'username': self.author}
+            )
+        )
+        self.assertRedirects(response, f'/profile/{self.author}/')
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.user,
+                author=self.author
+            ).exists()
+        )
+
+    def test__user_unfollow_author(self):
+        """Проверяем пользователь отписался от автора"""
+        response = self.authorized_client.get(
+            reverse('posts:profile_unfollow',
+                kwargs={'username': self.author}
+            )
+        )
+        self.assertRedirects(response, f'/profile/{self.author}/')
+        self.assertFalse(
+            Follow.objects.filter(
+                user=self.user,
+                author=self.author
+            ).exists()
+        )
 
     def test_new_post_see_only_follow(self):
+        """Проверяем новая запись появляется у подписавшихся"""
         Follow.objects.create(
             user=self.user,
             author=self.author,

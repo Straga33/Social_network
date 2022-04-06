@@ -1,13 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from http import HTTPStatus
-
-
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseServerError
+from django.http import HttpResponse
 from posts.models import Post, Group
+from django.shortcuts import render
 
 
 User = get_user_model()
 
+def my_test_403_view(request):
+    raise PermissionDenied
+
+def my_test_500_view(request):
+    return HttpResponseServerError(render(request, 'core/500.html', status=500))
 
 class PostURLTests(TestCase):
     @classmethod
@@ -86,7 +93,7 @@ class PostURLTests(TestCase):
                 self.assertTemplateUsed(response, template)
 
 
-class Page404Tests(TestCase):
+class PageHandlerTests(TestCase):
     def setUp(self):
         self.guest_client = Client()
 
@@ -95,3 +102,16 @@ class Page404Tests(TestCase):
         response = self.guest_client.get('page_not_found')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertTemplateUsed(response, 'core/404.html')
+
+
+    def test_page_permission_denied(self):
+        """Проверяем, что страница 403 отдает кастомный шаблон"""
+        response = self.guest_client.get('/403/')
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertTemplateUsed(response, 'core/403.html')
+
+    def test_page_permission_500denied(self):
+        """Проверяем, что страница 500 отдает кастомный шаблон"""
+        response = self.guest_client.get('/500/')
+        self.assertEqual(response.status_code, HTTPStatus.INTERNAL_SERVER_ERROR)
+        self.assertTemplateUsed(response, 'core/500.html')

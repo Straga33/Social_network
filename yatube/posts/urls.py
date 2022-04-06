@@ -1,5 +1,6 @@
 from django.urls import path
 from posts import views
+from posts.tests import test_urls
 
 
 app_name = 'posts'
@@ -26,5 +27,7 @@ urlpatterns = [
         'profile/<str:username>/unfollow/',
         views.profile_unfollow,
         name='profile_unfollow'
-    ),
+    ),    
+    path('403/', test_urls.my_test_403_view, name='page_403'),
+    path('500/', test_urls.my_test_500_view, name='page_500'),
 ]
