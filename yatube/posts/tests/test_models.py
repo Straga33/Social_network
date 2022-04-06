@@ -117,9 +117,9 @@ class CommentModelTest(TestCase):
         cls.comment = Comment.objects.create(
             post=cls.post,
             author=cls.user,
-            text='Тестовый комментрарий',            
+            text='Тестовый комментрарий',
         )
-    
+
     def test_model_comment_have_correct_object_names(self):
         """Проверяем, модель комментов корректно работает __str__."""
         self.assertEqual(self.comment.text[:15], str(self.comment))
@@ -164,8 +164,8 @@ class FollowModelTest(TestCase):
         cls.following = Follow.objects.create(
             user=cls.user,
             author=cls.author,
-        )        
-    
+        )
+
     def test_model_follow_have_correct_object_names(self):
         """Проверяем, модель подписки корректно работает __str__."""
         self.assertEqual(

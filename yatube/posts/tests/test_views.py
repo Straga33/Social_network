@@ -243,8 +243,7 @@ class FollowTest(TestCase):
         """Проверяем пользователь подписался на автора"""
         response = self.authorized_client.get(
             reverse('posts:profile_follow',
-                kwargs={'username': self.author}
-            )
+                    kwargs={'username': self.author})
         )
         self.assertRedirects(response, f'/profile/{self.author}/')
         self.assertTrue(
@@ -258,8 +257,7 @@ class FollowTest(TestCase):
         """Проверяем пользователь отписался от автора"""
         response = self.authorized_client.get(
             reverse('posts:profile_unfollow',
-                kwargs={'username': self.author}
-            )
+                    kwargs={'username': self.author})
         )
         self.assertRedirects(response, f'/profile/{self.author}/')
         self.assertFalse(
