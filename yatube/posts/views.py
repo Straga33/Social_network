@@ -137,10 +137,10 @@ def profile_follow(request, username):
     template = 'posts:profile'
     author = get_object_or_404(User, username=username)
     if author != request.user:
-        Follow.objects.get_or_create(user=request.user, author=author)        
+        Follow.objects.get_or_create(user=request.user, author=author)
         return redirect(template, username=username)
     else:
-        raise PermissionDenied   
+        raise PermissionDenied
 
 
 @login_required

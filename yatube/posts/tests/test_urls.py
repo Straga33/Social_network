@@ -1,8 +1,6 @@
-from audioop import reverse
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
 from django.test import TestCase, Client
 
 from posts.models import Post, Group
@@ -107,14 +105,14 @@ class CommentURLTests(TestCase):
         response = f'/posts/{self.post.id}/comment/'
         expected_value = f'/posts/{self.post.id}/'
         self.assertRedirects(
-                    self.authorized_client.get(response),
-                    expected_value
-                )
+            self.authorized_client.get(response),
+            expected_value
+        )
 
 
 class FollowURLTests(TestCase):
     def setUp(self):
-        self.auth = User.objects.create(username='auth')           
+        self.auth = User.objects.create(username='auth')
         self.authorized_client_auth = Client()
         self.authorized_client_auth.force_login(self.auth)
         self.user = User.objects.create(username='HasNoName')
@@ -137,18 +135,18 @@ class FollowURLTests(TestCase):
         response = f'/profile/{self.auth.username}/follow/'
         expected_value = f'/profile/{self.auth.username}/'
         self.assertRedirects(
-                    self.authorized_client.get(response, follow=True),
-                    expected_value
-                )
+            self.authorized_client.get(response, follow=True),
+            expected_value
+        )
 
     def test_unfollow_url(self):
         """Проверяем, перенаправление страницы unfollow"""
         response = f'/profile/{self.auth.username}/unfollow/'
         expected_value = f'/profile/{self.auth.username}/'
         self.assertRedirects(
-                    self.authorized_client.get(response, follow=True),
-                    expected_value
-                )
+            self.authorized_client.get(response, follow=True),
+            expected_value
+        )
 
 
 class PageHandlerTests(TestCase):
