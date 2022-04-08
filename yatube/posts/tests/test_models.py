@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-
 from posts.models import Post, Group, Comment, Follow
 
 
@@ -169,7 +168,7 @@ class FollowModelTest(TestCase):
     def test_model_follow_have_correct_object_names(self):
         """Проверяем, модель подписки корректно работает __str__."""
         self.assertEqual(
-            f'Подписка на автора: {self.following.author}',
+            f'{self.following.user} подписан на {self.following.author}',
             str(self.following)
         )
 

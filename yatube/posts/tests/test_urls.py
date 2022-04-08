@@ -1,23 +1,14 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from audioop import reverse
 from http import HTTPStatus
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseServerError
-from posts.models import Post, Group
+
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.test import TestCase, Client
+
+from posts.models import Post, Group
 
 
 User = get_user_model()
-
-
-def my_test_403_view(request):
-    raise PermissionDenied
-
-
-def my_test_500_view(request):
-    return HttpResponseServerError(
-        render(request, 'core/500.html', status=500)
-    )
 
 
 class PostURLTests(TestCase):
@@ -97,27 +88,83 @@ class PostURLTests(TestCase):
                 self.assertTemplateUsed(response, template)
 
 
+class CommentURLTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create(username='auth')
+        cls.post = Post.objects.create(
+            author=cls.user,
+            text='Тестовый пост',
+        )
+
+    def setUp(self):
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+
+    def test_comment_url(self):
+        """Тест url комментария"""
+        response = f'/posts/{self.post.id}/comment/'
+        expected_value = f'/posts/{self.post.id}/'
+        self.assertRedirects(
+                    self.authorized_client.get(response),
+                    expected_value
+                )
+
+
+class FollowURLTests(TestCase):
+    def setUp(self):
+        self.auth = User.objects.create(username='auth')           
+        self.authorized_client_auth = Client()
+        self.authorized_client_auth.force_login(self.auth)
+        self.user = User.objects.create(username='HasNoName')
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+
+    def test_follow_index_url(self):
+        """Проверяем, статус страницы follow_index"""
+        response = self.authorized_client.get('/follow/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_follow_index_correct_template(self):
+        """Проверяем, шаблон follow_index"""
+        response = self.authorized_client.get('/follow/')
+        template = 'posts/follow.html'
+        self.assertTemplateUsed(response, template)
+
+    def test_follow_url(self):
+        """Проверяем, перенаправление страницы follow"""
+        response = f'/profile/{self.auth.username}/follow/'
+        expected_value = f'/profile/{self.auth.username}/'
+        self.assertRedirects(
+                    self.authorized_client.get(response, follow=True),
+                    expected_value
+                )
+
+    def test_unfollow_url(self):
+        """Проверяем, перенаправление страницы unfollow"""
+        response = f'/profile/{self.auth.username}/unfollow/'
+        expected_value = f'/profile/{self.auth.username}/'
+        self.assertRedirects(
+                    self.authorized_client.get(response, follow=True),
+                    expected_value
+                )
+
+
 class PageHandlerTests(TestCase):
     def setUp(self):
-        self.guest_client = Client()
+        self.user = User.objects.create(username='HasNoName')
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
 
     def test_page_not_found(self):
         """Проверяем, что страница 404 отдает кастомный шаблон"""
-        response = self.guest_client.get('page_not_found')
+        response = self.authorized_client.get('page_not_found')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertTemplateUsed(response, 'core/404.html')
 
     def test_page_permission_denied(self):
         """Проверяем, что страница 403 отдает кастомный шаблон"""
-        response = self.guest_client.get('/403/')
+        response = self.authorized_client.get(f'/profile/{self.user}/follow/')
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
         self.assertTemplateUsed(response, 'core/403.html')
-
-    def test_page_permission_500denied(self):
-        """Проверяем, что страница 500 отдает кастомный шаблон"""
-        response = self.guest_client.get('/500/')
-        self.assertEqual(
-            response.status_code,
-            HTTPStatus.INTERNAL_SERVER_ERROR
-        )
-        self.assertTemplateUsed(response, 'core/500.html')

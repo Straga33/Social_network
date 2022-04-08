@@ -1,9 +1,8 @@
-from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
 from django.conf import settings
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.core.exceptions import PermissionDenied
 
 from posts.models import Post, Group, Follow, User
 from posts.forms import PostForm, CommentForm
@@ -138,14 +137,17 @@ def profile_follow(request, username):
     template = 'posts:profile'
     author = get_object_or_404(User, username=username)
     if author != request.user:
-        Follow.objects.get_or_create(user=request.user, author=author)
-    return redirect(template, username=username)
+        Follow.objects.get_or_create(user=request.user, author=author)        
+        return redirect(template, username=username)
+    else:
+        raise PermissionDenied   
 
 
 @login_required
 def profile_unfollow(request, username):
     template = 'posts:profile'
     author = get_object_or_404(User, username=username)
-    if Follow.objects.filter(user=request.user, author=author).exists():
-        Follow.objects.filter(user=request.user, author=author).delete()
+    follower = Follow.objects.filter(user=request.user, author=author)
+    if follower.exists():
+        follower.delete()
     return redirect(template, username=username)
